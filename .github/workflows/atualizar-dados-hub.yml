@@ -1,0 +1,33 @@
+name: Atualizar dados do hub
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 7 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Baixar dados publicos do hub
+        run: python scripts/baixar_dados_hub.py
+
+      - name: Exportar CSVs
+        run: python scripts/exportar_dados_csv.py
+
+      - name: Commit dados atualizados
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Atualiza dados do hub"
+          file_pattern: dados/*.json dados_csv/*.csv

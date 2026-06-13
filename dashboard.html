@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Malha IA - Previsao por Filtros</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f4;
+      --ink: #17201b;
+      --muted: #5b665f;
+      --line: #d8ddd4;
+      --panel: #ffffff;
+      --green: #2d6a4f;
+      --blue: #26547c;
+      --gold: #b7791f;
+      --red: #9b2c2c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header {
+      padding: 28px 24px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    header p {
+      margin: 0;
+      max-width: 980px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 22px auto 44px;
+    }
+    .status {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: #fffdf7;
+      color: #59410a;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+    .kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+    .card, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .card {
+      padding: 16px;
+      min-height: 104px;
+    }
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .card strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+    }
+    .card small {
+      display: block;
+      margin-top: 9px;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+    .panels {
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 18px;
+    }
+    .panel {
+      padding: 16px;
+      min-width: 0;
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .chart-wrap {
+      height: 320px;
+      position: relative;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px 180px;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    input, select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f3f5f0;
+      color: #233027;
+      font-weight: 700;
+    }
+    .table-wrap {
+      max-height: 460px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #edf3ee;
+      color: #1f513b;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .doc {
+      margin-top: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .doc a { color: var(--blue); }
+    @media (max-width: 860px) {
+      .kpis, .panels, .toolbar { grid-template-columns: 1fr; }
+      header h1 { font-size: 24px; }
+      .chart-wrap { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Previsao por Filtros</h1>
+    <p>Modulo dedicado ao catalogo de recortes operacionais do Malha IA. O repositorio consome dados publicos do hub central e separa o fluxo pesado de recalculo das previsoes filtradas.</p>
+  </header>
+
+  <main>
+    <div id="status" class="status">Carregando dados estaticos...</div>
+
+    <section class="grid kpis" aria-label="Indicadores principais">
+      <div class="card"><span>Filtros catalogados</span><strong id="kpiFiltros">-</strong><small>Linhas em FILTROS_DISPONIVEIS.</small></div>
+      <div class="card"><span>Registros no recorte global</span><strong id="kpiGlobal">-</strong><small>Base de referencia informada pelo hub.</small></div>
+      <div class="card"><span>Recortes com 12+ registros</span><strong id="kpiViaveis">-</strong><small>Indicador operacional de volume minimo.</small></div>
+      <div class="card"><span>Meses de contexto</span><strong id="kpiMeses">-</strong><small>Linhas em CONTEXTO_SAZONAL.</small></div>
+    </section>
+
+    <section class="grid panels" aria-label="Graficos">
+      <div class="panel">
+        <h2>Filtros por tipo</h2>
+        <div class="chart-wrap"><canvas id="chartTipos"></canvas></div>
+      </div>
+      <div class="panel">
+        <h2>Maiores recortes por registros</h2>
+        <div class="chart-wrap"><canvas id="chartTop"></canvas></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Catalogo de filtros</h2>
+      <div class="toolbar">
+        <input id="busca" type="search" placeholder="Buscar por label, tipo ou sufixo">
+        <select id="tipoFiltro" aria-label="Tipo de filtro"></select>
+        <select id="minRegistros" aria-label="Volume minimo">
+          <option value="0">Todos os volumes</option>
+          <option value="12">12+ registros</option>
+          <option value="24">24+ registros</option>
+          <option value="100">100+ registros</option>
+          <option value="1000">1000+ registros</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Label</th>
+              <th>Sufixo da aba</th>
+              <th class="num">Registros</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaFiltros"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid panels" aria-label="Tabelas auxiliares" style="margin-top:18px">
+      <div class="panel">
+        <h2>Contexto sazonal</h2>
+        <div class="table-wrap"><table id="tabelaContexto"></table></div>
+      </div>
+      <div class="panel">
+        <h2>Area de manutencao</h2>
+        <div class="table-wrap"><table id="tabelaArea"></table></div>
+      </div>
+    </section>
+
+    <p class="doc">Contrato tecnico: <a href="docs/CONTRATO_DADOS.md">docs/CONTRATO_DADOS.md</a>. O painel atual mostra o catalogo e os insumos estaticos. As series filtradas completas dependem do workflow pesado com acesso a planilha Google.</p>
+  </main>
+
+  <script>
+    const DATASETS = {
+      filtros: 'dados/filtros_disponiveis.json',
+      contexto: 'dados/contexto_sazonal.json',
+      area: 'dados/area_manutencao.json',
+      manifest: 'dados/manifest_hub.json'
+    };
+
+    const state = {
+      filtros: [],
+      contexto: [],
+      area: [],
+      charts: {}
+    };
+
+    function matrizParaObjetos(matriz) {
+      if (!Array.isArray(matriz) || matriz.length === 0) return [];
+      const headers = matriz[0].map(String);
+      return matriz.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i] ?? ''])));
+    }
+
+    async function carregarJson(url, opcional = false) {
+      const resposta = await fetch(url, { cache: 'no-store' });
+      if (!resposta.ok) {
+        if (opcional) return null;
+        throw new Error(`${url}: HTTP ${resposta.status}`);
+      }
+      return resposta.json();
+    }
+
+    function fmtInt(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR');
+    }
+
+    function agruparPorTipo(filtros) {
+      return filtros.reduce((acc, item) => {
+        const tipo = item.Tipo_Filtro || 'sem_tipo';
+        acc[tipo] = (acc[tipo] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function atualizarKpis() {
+      const global = state.filtros.find(f => f.Tipo_Filtro === 'global');
+      document.getElementById('kpiFiltros').textContent = fmtInt(state.filtros.length);
+      document.getElementById('kpiGlobal').textContent = fmtInt(global?.N_Registros);
+      document.getElementById('kpiViaveis').textContent = fmtInt(state.filtros.filter(f => Number(f.N_Registros || 0) >= 12).length);
+      document.getElementById('kpiMeses').textContent = fmtInt(state.contexto.length);
+    }
+
+    function renderChartTipos() {
+      const dados = agruparPorTipo(state.filtros);
+      const labels = Object.keys(dados);
+      const valores = labels.map(label => dados[label]);
+      state.charts.tipos?.destroy();
+      state.charts.tipos = new Chart(document.getElementById('chartTipos'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{ label: 'Filtros', data: valores, backgroundColor: '#2d6a4f' }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    function renderChartTop() {
+      const itens = [...state.filtros]
+        .filter(f => f.Tipo_Filtro !== 'global')
+        .sort((a, b) => Number(b.N_Registros || 0) - Number(a.N_Registros || 0))
+        .slice(0, 12)
+        .reverse();
+      state.charts.top?.destroy();
+      state.charts.top = new Chart(document.getElementById('chartTop'), {
+        type: 'bar',
+        data: {
+          labels: itens.map(i => i.Label),
+          datasets: [{ label: 'Registros', data: itens.map(i => Number(i.N_Registros || 0)), backgroundColor: '#26547c' }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true } }
+        }
+      });
+    }
+
+    function preencherTipoFiltro() {
+      const select = document.getElementById('tipoFiltro');
+      const tipos = ['todos', ...Object.keys(agruparPorTipo(state.filtros)).sort()];
+      select.innerHTML = tipos.map(tipo => `<option value="${tipo}">${tipo === 'todos' ? 'Todos os tipos' : tipo}</option>`).join('');
+    }
+
+    function filtrosVisiveis() {
+      const termo = document.getElementById('busca').value.trim().toLowerCase();
+      const tipo = document.getElementById('tipoFiltro').value;
+      const minimo = Number(document.getElementById('minRegistros').value || 0);
+      return state.filtros.filter(item => {
+        const texto = `${item.Tipo_Filtro} ${item.Label} ${item.Sufixo_Aba}`.toLowerCase();
+        return (!termo || texto.includes(termo))
+          && (tipo === 'todos' || item.Tipo_Filtro === tipo)
+          && Number(item.N_Registros || 0) >= minimo;
+      });
+    }
+
+    function renderTabelaFiltros() {
+      const tbody = document.getElementById('tabelaFiltros');
+      tbody.innerHTML = filtrosVisiveis().map(item => `
+        <tr>
+          <td><span class="tag">${item.Tipo_Filtro || ''}</span></td>
+          <td>${item.Label || ''}</td>
+          <td><code>${item.Sufixo_Aba || '(global)'}</code></td>
+          <td class="num">${fmtInt(item.N_Registros)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTabelaGenerica(id, linhas, limite = 14) {
+      const tabela = document.getElementById(id);
+      if (!linhas.length) {
+        tabela.innerHTML = '<tbody><tr><td>Sem dados.</td></tr></tbody>';
+        return;
+      }
+      const headers = Object.keys(linhas[0]);
+      const body = linhas.slice(0, limite).map(row => `<tr>${headers.map(h => `<td>${row[h] ?? ''}</td>`).join('')}</tr>`).join('');
+      tabela.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody>`;
+    }
+
+    function bindFiltros() {
+      ['busca', 'tipoFiltro', 'minRegistros'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderTabelaFiltros);
+      });
+    }
+
+    async function main() {
+      const [filtrosRaw, contextoRaw, areaRaw, manifest] = await Promise.all([
+        carregarJson(DATASETS.filtros),
+        carregarJson(DATASETS.contexto),
+        carregarJson(DATASETS.area),
+        carregarJson(DATASETS.manifest, true)
+      ]);
+      state.filtros = matrizParaObjetos(filtrosRaw);
+      state.contexto = matrizParaObjetos(contextoRaw);
+      state.area = matrizParaObjetos(areaRaw);
+
+      atualizarKpis();
+      preencherTipoFiltro();
+      renderChartTipos();
+      renderChartTop();
+      renderTabelaFiltros();
+      renderTabelaGenerica('tabelaContexto', state.contexto);
+      renderTabelaGenerica('tabelaArea', state.area);
+      bindFiltros();
+
+      const atualizado = manifest?.atualizado_em_utc ? ` Ultima sincronizacao do hub: ${manifest.atualizado_em_utc}.` : '';
+      document.getElementById('status').textContent = `Catalogo carregado com ${fmtInt(state.filtros.length)} filtros. Snapshots filtrados completos dependem do workflow pesado/exportador Apps Script.${atualizado}`;
+    }
+
+    main().catch(err => {
+      document.getElementById('status').textContent = `Falha ao carregar dados: ${err.message}`;
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
