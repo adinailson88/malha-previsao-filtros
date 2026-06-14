@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "id": "previsao_filtros",
+  "titulo": "Previsao por filtros",
+  "artigo": "Artigo 6 - Previsao por filtros",
+  "repositorio": "malha-previsao-filtros",
+  "repo_url": "https://github.com/adinailson88/malha-previsao-filtros",
+  "pages_url": "https://adinailson88.github.io/malha-previsao-filtros/",
+  "dashboard_url": "https://adinailson88.github.io/malha-previsao-filtros/dashboard.html",
+  "hub_url": "https://github.com/adinailson88/malha-ia",
+  "manifest_hub_path": "dados/manifest_hub.json",
+  "modo_dados": "json_publico_hub",
+  "usa_secret": true,
+  "secret_principal": "AUTENTICACAO_GOOGLE",
+  "workflow_leve": "atualizar-dados-hub.yml",
+  "workflow_pesado": "previsao_filtros.yml",
+  "dashboard_tipo": "catalogo_recortes",
+  "status_operacional": "ativo",
+  "observacao": "Mostra catalogo de filtros no modo leve e recalcula recortes por campus/tipo/categoria no modo pesado."
+}
