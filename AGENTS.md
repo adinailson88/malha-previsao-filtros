@@ -10,7 +10,7 @@ Escopo permitido:
 1. Catalogo de filtros.
 2. Previsoes por campus, tipo e categoria.
 3. Exportacao de abas filtradas.
-4. Workflow pesado `previsao_filtros.yml`.
+4. Workflows de sincronizacao dos snapshots publicos.
 5. Documentacao do eixo de filtros.
 
 Fora do escopo:
@@ -22,4 +22,4 @@ Fora do escopo:
 
 Regra de dados:
 
-`malha-ia` permanece como hub central. Este repositorio deve guardar apenas catalogos, snapshots filtrados e artefatos pertinentes ao eixo de filtros.
+`malha-ia` permanece como hub central. Este repositorio deve guardar apenas catalogos, snapshots filtrados e artefatos pertinentes ao eixo de filtros. Nao exigir `AUTENTICACAO_GOOGLE` neste repositorio; o acesso autenticado a planilha fica centralizado no hub.

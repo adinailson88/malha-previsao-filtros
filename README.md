@@ -11,8 +11,8 @@ Este repositorio cobre o eixo de filtros:
 
 1. catalogo de filtros disponiveis;
 2. motor `motor_previsao_filtros.py`;
-3. workflow pesado `previsao_filtros.yml`;
-4. exportacao opcional de abas filtradas via Apps Script;
+3. sincronizacao de snapshots publicos do hub;
+4. exportacao opcional de abas filtradas via Apps Script, quando necessario;
 5. dashboard de acompanhamento dos filtros.
 
 Ficam fora deste repositorio:
@@ -32,8 +32,8 @@ Ficam fora deste repositorio:
 5. `scripts/baixar_dados_hub.py`: baixa snapshots leves do hub.
 6. `scripts/exportar_dados_csv.py`: gera CSVs do catalogo e contextos.
 7. `scripts/exportar_dados_filtrados_json.py`: exporta abas filtradas via Google Sheets API, quando existirem.
-8. `.github/workflows/previsao_filtros.yml`: workflow pesado com Google Sheets.
-9. `.github/workflows/atualizar-dados-hub.yml`: workflow leve para atualizar catalogos.
+8. `.github/workflows/previsao_filtros.yml`: workflow de compatibilidade que sincroniza dados publicos do hub.
+9. `.github/workflows/atualizar-dados-hub.yml`: workflow periodico para atualizar catalogos.
 10. `dashboard.html`: painel estatico do catalogo de filtros.
 
 ## Execucao local
@@ -56,19 +56,9 @@ python scripts\exportar_dados_filtrados_json.py --spreadsheet-id ID_DA_PLANILHA 
 python scripts\exportar_dados_csv.py
 ```
 
-Executar recalculo completo contra Google Sheets:
+## Recalculo autenticado
 
-```powershell
-python motor_previsao_filtros.py --apenas-filtros
-```
-
-## Secret necessario para o modo pesado
-
-O workflow `previsao_filtros.yml` precisa do secret:
-
-`AUTENTICACAO_GOOGLE`
-
-O valor esperado e o JSON da conta de servico convertido para Base64, pois o workflow reconstrui `autenticacao_google.json` com `base64 -d`.
+O recalculo completo contra Google Sheets fica centralizado no repositorio `malha-ia`, que publica os snapshots em `dados/*.json`. Este repositorio nao precisa de `AUTENTICACAO_GOOGLE` para atualizar o dashboard.
 
 ## Modo leve e modo pesado
 
@@ -78,12 +68,12 @@ Modo leve:
 2. publica dashboard do catalogo de filtros;
 3. nao precisa de API Google Sheets.
 
-Modo pesado:
+Modo autenticado central:
 
-1. recalcula as previsoes filtradas;
-2. cria/atualiza abas `PREVISAO_*{sufixo}` e `PREVISAO_CUSTO_*{sufixo}`;
-3. precisa do secret `AUTENTICACAO_GOOGLE`;
-4. pode demorar horas, pois multiplica filtros por modelos.
+1. recalcula as previsoes filtradas no hub `malha-ia`;
+2. cria/atualiza os snapshots publicos em `dados/*.json`;
+3. usa credenciais apenas no hub;
+4. deixa este repositorio como consumidor estatico dos dados publicados.
 
 ## Licenca
 

@@ -39,11 +39,11 @@ Quando o workflow pesado ou o exportador via Apps Script forem executados, os no
 
 ## Regra de fronteira
 
-`CHAMADOS` nao deve ser duplicado aqui como fonte primaria. Quando for necessario recalcular filtros, usar `motor_previsao_filtros.py` com acesso autenticado a planilha operacional.
+`CHAMADOS` nao deve ser duplicado aqui como fonte primaria. Quando for necessario recalcular filtros, usar o fluxo autenticado do hub `malha-ia`; este repositorio consome os snapshots publicos resultantes.
 
 ## API e secret
 
-O modo leve nao precisa de API Google Sheets. O modo pesado depende de `AUTENTICACAO_GOOGLE`, em Base64, para reconstruir `autenticacao_google.json` no GitHub Actions.
+Os workflows deste repositorio nao precisam de API Google Sheets nem de `AUTENTICACAO_GOOGLE`. A credencial Google, quando necessaria, fica restrita ao hub `malha-ia`.
 
 ## Limitacoes
 
