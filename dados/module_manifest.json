@@ -10,11 +10,11 @@
   "hub_url": "https://github.com/adinailson88/malha-ia",
   "manifest_hub_path": "dados/manifest_hub.json",
   "modo_dados": "json_publico_hub",
-  "usa_secret": true,
-  "secret_principal": "AUTENTICACAO_GOOGLE",
+  "usa_secret": false,
+  "secret_principal": null,
   "workflow_leve": "atualizar-dados-hub.yml",
-  "workflow_pesado": "previsao_filtros.yml",
+  "workflow_pesado": null,
   "dashboard_tipo": "catalogo_recortes",
   "status_operacional": "ativo",
-  "observacao": "Mostra catalogo de filtros no modo leve e recalcula recortes por campus/tipo/categoria no modo pesado."
+  "observacao": "Mostra catalogo de filtros e snapshots publicos do hub. A leitura da planilha e o recalculo pesado ficam centralizados no repositorio malha-ia."
 }
