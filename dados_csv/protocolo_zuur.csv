@@ -1,0 +1,9 @@
+passo,titulo,status,evidencia,mudanca_minima
+1,Outliers em tamanhos dos recortes,verificado,dados/filtros_disponiveis.json,Marcar filtros muito pequenos antes de rodar modelos por recorte.
+2,Homogeneidade de variancia,precisa calcular,snapshots filtrados ainda nao publicados,Calcular variancia por serie filtrada quando os JSONs filtrados forem exportados.
+3,Normalidade,precisa calcular,snapshots filtrados ainda nao publicados,Publicar pressupostos por sufixo ou usar diagnostico do motor filtrado.
+4,Zeros ou filtros raros,verificado,dados/filtros_disponiveis.json,Impedir leitura preditiva forte em filtros abaixo do minimo temporal.
+5,Colinearidade entre covariaveis,precisa calcular,contexto sazonal + snapshots filtrados,Reaproveitar VIF do motor quando cada sufixo tiver serie suficiente.
+6,Relacoes entre Y e X,parcial,dados/contexto_sazonal.json,Cruzar contexto sazonal com cada serie filtrada publicada.
+7,Interacoes,verificado,dados/filtros_disponiveis.json,"Tratar interacao como campus/tipo/categoria, preservando o eixo de filtros."
+8,Independencia temporal,precisa calcular,snapshots filtrados ainda nao publicados,Publicar validacao rolling-origin por sufixo quando os resultados filtrados existirem.

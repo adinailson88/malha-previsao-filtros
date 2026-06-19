@@ -1,0 +1,117 @@
+{
+  "gerado_em": "2026-06-18T02:50:46.641382+00:00",
+  "repositorio": "malha-previsao-filtros",
+  "eixo": "previsao por filtros",
+  "referencia": "Zuur, A.F., Ieno, E.N. & Elphick, C.S. (2010). A protocol for data exploration to avoid common statistical problems. Methods in Ecology and Evolution, 1(1), 3-14. doi:10.1111/j.2041-210X.2009.00001.x",
+  "escopo": "Exploracao do catalogo de filtros e contextos publicos; sem resultados filtrados pesados.",
+  "diagnostico_do_que_falta": [
+    "dados/previsao_temporal__<sufixo>.json",
+    "dados/previsao_detalhes__<sufixo>.json",
+    "dados/previsao_incertezas__<sufixo>.json",
+    "dados/previsao_validacao__<sufixo>.json",
+    "dados/previsao_custo_temporal__<sufixo>.json"
+  ],
+  "passos": [
+    {
+      "passo": 1,
+      "titulo": "Outliers em tamanhos dos recortes",
+      "status": "verificado",
+      "evidencia": "dados/filtros_disponiveis.json",
+      "resultado": {
+        "n": 39,
+        "min": 1.0,
+        "q1": 32.0,
+        "q3": 1711.5,
+        "max": 48418.0,
+        "outliers_baixos": 0,
+        "outliers_altos": 3
+      },
+      "mudanca_minima": "Marcar filtros muito pequenos antes de rodar modelos por recorte."
+    },
+    {
+      "passo": 2,
+      "titulo": "Homogeneidade de variancia",
+      "status": "precisa calcular",
+      "evidencia": "snapshots filtrados ainda nao publicados",
+      "resultado": {
+        "status": "Informação insuficiente para verificar."
+      },
+      "mudanca_minima": "Calcular variancia por serie filtrada quando os JSONs filtrados forem exportados."
+    },
+    {
+      "passo": 3,
+      "titulo": "Normalidade",
+      "status": "precisa calcular",
+      "evidencia": "snapshots filtrados ainda nao publicados",
+      "resultado": {
+        "status": "Informação insuficiente para verificar."
+      },
+      "mudanca_minima": "Publicar pressupostos por sufixo ou usar diagnostico do motor filtrado."
+    },
+    {
+      "passo": 4,
+      "titulo": "Zeros ou filtros raros",
+      "status": "verificado",
+      "evidencia": "dados/filtros_disponiveis.json",
+      "resultado": {
+        "filtros_total": 39,
+        "filtros_com_menos_12_registros": 6,
+        "por_tipo": {
+          "global": 1,
+          "campus": 5,
+          "tipo": 2,
+          "cat_prev": 18,
+          "cat_corr": 13
+        }
+      },
+      "mudanca_minima": "Impedir leitura preditiva forte em filtros abaixo do minimo temporal."
+    },
+    {
+      "passo": 5,
+      "titulo": "Colinearidade entre covariaveis",
+      "status": "precisa calcular",
+      "evidencia": "contexto sazonal + snapshots filtrados",
+      "resultado": {
+        "status": "Informação insuficiente para verificar."
+      },
+      "mudanca_minima": "Reaproveitar VIF do motor quando cada sufixo tiver serie suficiente."
+    },
+    {
+      "passo": 6,
+      "titulo": "Relacoes entre Y e X",
+      "status": "parcial",
+      "evidencia": "dados/contexto_sazonal.json",
+      "resultado": {
+        "linhas_contexto": 122
+      },
+      "mudanca_minima": "Cruzar contexto sazonal com cada serie filtrada publicada."
+    },
+    {
+      "passo": 7,
+      "titulo": "Interacoes",
+      "status": "verificado",
+      "evidencia": "dados/filtros_disponiveis.json",
+      "resultado": {
+        "por_tipo": {
+          "global": 1,
+          "campus": 5,
+          "tipo": 2,
+          "cat_prev": 18,
+          "cat_corr": 13
+        }
+      },
+      "mudanca_minima": "Tratar interacao como campus/tipo/categoria, preservando o eixo de filtros."
+    },
+    {
+      "passo": 8,
+      "titulo": "Independencia temporal",
+      "status": "precisa calcular",
+      "evidencia": "snapshots filtrados ainda nao publicados",
+      "resultado": {
+        "linhas_area": 12
+      },
+      "mudanca_minima": "Publicar validacao rolling-origin por sufixo quando os resultados filtrados existirem."
+    }
+  ],
+  "metodo_artigo": "No eixo de filtros, o protocolo de Zuur et al. (2010) deve ser usado como triagem antes de interpretar previsoes por campus, tipo ou categoria. O tamanho do recorte, zeros estruturais e independencia temporal determinam se um filtro pode sustentar modelo preditivo. Enquanto o repositorio estiver no modo leve, o diagnostico fica restrito ao catalogo de filtros e aos contextos publicados."
+}

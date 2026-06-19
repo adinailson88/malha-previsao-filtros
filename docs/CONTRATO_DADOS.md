@@ -12,6 +12,8 @@ O repositorio `adinailson88/malha-ia` permanece como hub central dos dados. Este
 | `dados/contexto_sazonal.json` | Contexto de sazonalidade usado pelos motores |
 | `dados/area_manutencao.json` | Area construida e area total como contexto institucional |
 | `dados/manifest_hub.json` | Metadados de sincronizacao com o hub |
+| `dados/protocolo_zuur.json` | Diagnostico transversal de exploracao de dados segundo Zuur et al. (2010) |
+| `dados/analise_gam.json` | Triagem de adequacao GAM por recorte, sem substituir series mensais filtradas |
 
 ## Campos do catalogo de filtros
 

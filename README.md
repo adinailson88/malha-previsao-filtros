@@ -41,6 +41,8 @@ Ficam fora deste repositorio:
 ```powershell
 python scripts\baixar_dados_hub.py
 python scripts\exportar_dados_csv.py
+python scripts\gerar_protocolo_zuur.py
+python scripts\gerar_analise_gam.py
 ```
 
 Validacao sintatica:
@@ -54,7 +56,17 @@ Exportar abas filtradas via Google Sheets API, quando ja tiverem sido geradas na
 ```powershell
 python scripts\exportar_dados_filtrados_json.py --spreadsheet-id ID_DA_PLANILHA --incluir-filtradas
 python scripts\exportar_dados_csv.py
+python scripts\gerar_protocolo_zuur.py
+python scripts\gerar_analise_gam.py
 ```
+
+## Protocolo de exploracao de dados
+
+O diagnostico transversal baseado em Zuur, Ieno & Elphick (2010) e gerado por `scripts/gerar_protocolo_zuur.py`, publicado em `dados/protocolo_zuur.json` e resumido em `dados_csv/protocolo_zuur.csv`. A metodologia reutilizavel no artigo esta em [`docs/METODOLOGIA_PROTOCOLO_ZUUR.md`](docs/METODOLOGIA_PROTOCOLO_ZUUR.md).
+
+## Camada GAM explicavel
+
+A adequacao de Generalized Additive Models e registrada por `scripts/gerar_analise_gam.py`, com saida em `dados/analise_gam.json` e `dados_csv/analise_gam.csv`. Neste repo, GAM e uma triagem de recortes aptos; o ajuste real depende de series mensais por sufixo de aba, nao apenas de `N_Registros`. A metodologia esta em [`docs/METODOLOGIA_GAM.md`](docs/METODOLOGIA_GAM.md).
 
 ## Recalculo autenticado
 
