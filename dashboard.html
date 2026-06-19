@@ -236,6 +236,16 @@
       </div>
     </section>
 
+    <section class="panel" style="margin-top:18px">
+      <h2>Protocolo de exploracao de dados</h2>
+      <div id="protocoloZuur"></div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2>Camada GAM explicavel</h2>
+      <div id="analiseGam"></div>
+    </section>
+
     <p class="doc">Contrato tecnico: <a href="docs/CONTRATO_DADOS.md">docs/CONTRATO_DADOS.md</a>. O painel atual mostra o catalogo e os insumos estaticos. As series filtradas completas dependem do workflow pesado com acesso a planilha Google.</p>
   </main>
 
@@ -244,6 +254,8 @@
       filtros: 'dados/filtros_disponiveis.json',
       contexto: 'dados/contexto_sazonal.json',
       area: 'dados/area_manutencao.json',
+      protocolo: 'dados/protocolo_zuur.json',
+      gam: 'dados/analise_gam.json',
       manifest: 'dados/manifest_hub.json'
     };
 
@@ -373,6 +385,48 @@
       tabela.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody>`;
     }
 
+    function renderProtocoloZuur(protocolo) {
+      const el = document.getElementById('protocoloZuur');
+      if (!protocolo || !Array.isArray(protocolo.passos)) {
+        el.innerHTML = '<p class="doc">dados/protocolo_zuur.json indisponivel.</p>';
+        return;
+      }
+      const body = protocolo.passos.map(p => `
+        <tr>
+          <td class="num">${p.passo}</td>
+          <td>${p.titulo || ''}</td>
+          <td><span class="tag">${p.status || ''}</span></td>
+          <td>${p.evidencia || ''}</td>
+          <td>${p.mudanca_minima || ''}</td>
+        </tr>`).join('');
+      el.innerHTML = `<p class="doc">${protocolo.metodo_artigo || ''}</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Passo</th><th>Diagnostico</th><th>Status</th><th>Evidencia</th><th>Mudanca minima</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table></div>`;
+    }
+
+    function renderAnaliseGam(gam) {
+      const el = document.getElementById('analiseGam');
+      if (!gam || !Array.isArray(gam.efeitos_aditivos)) {
+        el.innerHTML = '<p class="doc">dados/analise_gam.json indisponivel.</p>';
+        return;
+      }
+      const suporte = gam.suporte_amostral || {};
+      const body = gam.efeitos_aditivos.map(e => `
+        <tr>
+          <td>${e.termo || ''}</td>
+          <td><span class="tag">${e.status || ''}</span></td>
+          <td>${e.evidencia || ''}</td>
+        </tr>`).join('');
+      el.innerHTML = `<p class="doc"><strong>Status:</strong> ${gam.status_geral || ''}. ${gam.familia_recomendada || ''}</p>
+        <p class="doc">Triagem: ${fmtInt(suporte.filtros_catalogados)} filtros; ${fmtInt(suporte.recortes_36_mais_registros)} recortes com 36+ registros brutos; ajuste real exige meses observados por recorte.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Termo GAM</th><th>Status</th><th>Evidencia</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table></div>`;
+    }
+
     function bindFiltros() {
       ['busca', 'tipoFiltro', 'minRegistros'].forEach(id => {
         document.getElementById(id).addEventListener('input', renderTabelaFiltros);
@@ -380,10 +434,12 @@
     }
 
     async function main() {
-      const [filtrosRaw, contextoRaw, areaRaw, manifest] = await Promise.all([
+      const [filtrosRaw, contextoRaw, areaRaw, protocoloRaw, gamRaw, manifest] = await Promise.all([
         carregarJson(DATASETS.filtros),
         carregarJson(DATASETS.contexto),
         carregarJson(DATASETS.area),
+        carregarJson(DATASETS.protocolo, true),
+        carregarJson(DATASETS.gam, true),
         carregarJson(DATASETS.manifest, true)
       ]);
       state.filtros = matrizParaObjetos(filtrosRaw);
@@ -397,6 +453,8 @@
       renderTabelaFiltros();
       renderTabelaGenerica('tabelaContexto', state.contexto);
       renderTabelaGenerica('tabelaArea', state.area);
+      renderProtocoloZuur(protocoloRaw);
+      renderAnaliseGam(gamRaw);
       bindFiltros();
 
       const atualizado = manifest?.atualizado_em_utc ? ` Ultima sincronizacao do hub: ${manifest.atualizado_em_utc}.` : '';
