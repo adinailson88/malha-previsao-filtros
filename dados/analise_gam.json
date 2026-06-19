@@ -1,0 +1,42 @@
+{
+  "artefato": "analise_gam",
+  "eixo": "previsao_filtros",
+  "fonte": "dados/filtros_disponiveis.json",
+  "status_geral": "triagem_de_viabilidade",
+  "alvo": "series filtradas futuras por recorte",
+  "familia_recomendada": "Herdar familia do alvo: contagem para chamados; Gamma/log ou log1p para custos.",
+  "suporte_amostral": {
+    "filtros_catalogados": 39,
+    "recortes_12_mais_registros": 33,
+    "recortes_36_mais_registros": 28,
+    "recortes_100_mais_registros": 25,
+    "minimo_temporal_recomendado": "36 pontos mensais por recorte, nao apenas 36 registros brutos"
+  },
+  "efeitos_aditivos": [
+    {
+      "termo": "s(tendencia) por filtro",
+      "status": "dependente_de_serie_filtrada",
+      "evidencia": "O catalogo informa volume bruto; o ajuste GAM exige serie mensal por sufixo de aba."
+    },
+    {
+      "termo": "s(mes, cyclic=True)",
+      "status": "recomendado_para_recortes_viaveis",
+      "evidencia": "Aplicar somente quando o recorte tiver cobertura temporal suficiente."
+    },
+    {
+      "termo": "hierarquia tipo/categoria",
+      "status": "recomendacao_metodologica",
+      "evidencia": "Usar filtros como triagem; evitar inferencia em categorias raras."
+    }
+  ],
+  "recomendacao_dashboard": "Exibir GAM como triagem de recortes aptos, sem criar previsao onde so existe catalogo.",
+  "proximas_validacoes": [
+    "Materializar series mensais por sufixo de aba antes de ajustar GAM por filtro.",
+    "Bloquear ajuste em recortes raros, mesmo que aparecam no catalogo.",
+    "Comparar recortes viaveis contra os modelos temporais existentes."
+  ],
+  "limites": [
+    "N_Registros nao equivale a numero de meses observados.",
+    "Sem serie temporal filtrada, usar a frase: Informação insuficiente para verificar."
+  ]
+}
