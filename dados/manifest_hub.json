@@ -1,18 +1,18 @@
 {
   "fonte": "https://raw.githubusercontent.com/adinailson88/malha-ia/main/dados",
-  "atualizado_em_utc": "2026-08-05T07:36:33.500923+00:00",
+  "atualizado_em_utc": "2026-08-05T08:30:41.096383+00:00",
   "arquivos": [
     {
       "arquivo": "filtros_disponiveis.json",
-      "linhas_incluindo_cabecalho": 39,
-      "linhas_dados": 38,
-      "bytes_origem": 2324
+      "linhas_incluindo_cabecalho": 38,
+      "linhas_dados": 37,
+      "bytes_origem": 2256
     },
     {
       "arquivo": "contexto_sazonal.json",
-      "linhas_incluindo_cabecalho": 123,
-      "linhas_dados": 122,
-      "bytes_origem": 10246
+      "linhas_incluindo_cabecalho": 102,
+      "linhas_dados": 101,
+      "bytes_origem": 8524
     },
     {
       "arquivo": "area_manutencao.json",
