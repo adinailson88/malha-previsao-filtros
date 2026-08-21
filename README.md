@@ -3,7 +3,7 @@
 Repositorio do eixo de previsao por filtros do ecossistema Malha IA. O objetivo e separar o motor pesado que executa recortes por campus, tipo e categoria, mantendo o `malha-ia` como hub central dos dados.
 
 Repositorio-hub de dados: [adinailson88/malha-ia](https://github.com/adinailson88/malha-ia)  
-Dashboard previsto: `https://adinailson88.github.io/malha-previsao-filtros/`
+Dashboard publicado: `https://adinailson88.github.io/malha-previsao-filtros/`
 
 ## Escopo
 
