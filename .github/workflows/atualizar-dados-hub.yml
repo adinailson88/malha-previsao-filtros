@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: atualizar-dados-hub
+  cancel-in-progress: false
+
 jobs:
   atualizar:
     runs-on: ubuntu-latest
